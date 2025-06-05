@@ -993,15 +993,10 @@ RmtErrorCode RmtVirtualAllocationListUpdateAliasedResourceSizes(const RmtVirtual
     RmtErrorCode result = kRmtOk;
 
     // Find the maximum number of resources in any of the virtual allocations.
-    int max_resource = 0;
-    for (int index = 0; index < allocation_list->allocation_count; index++)
-    {
-        // Update the maximum number of resources found.
-        if (allocation_list[index].allocation_details != nullptr)
-        {
-            max_resource = RMT_MAXIMUM(max_resource, allocation_list[index].allocation_details->resource_count);
-        }
-    }
+    auto allocations  = std::span(allocation_list->allocation_details, allocation_list->allocation_count);
+    int  max_resource = std::max_element(allocations.begin(), allocations.end(), [](const RmtVirtualAllocation& a, const RmtVirtualAllocation& b) {
+                           return a.resource_count < b.resource_count;
+                       })->resource_count;
 
     if (max_resource == 0)
     {
