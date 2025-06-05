@@ -32,12 +32,12 @@ using JobFunction = std::function<void(int32_t thread_id, int32_t job_index, voi
 // It contains the function to be executed, input data and counters for tracking status.
 struct Job
 {
-    JobFunction          function;
-    void*                input      = nullptr;
-    int32_t              base_index = 0;
-    int32_t              count      = 0;
-    std::atomic<int32_t> run_count{0};
-    std::atomic<int32_t> completed_count{0};
+    JobFunction          function;              ///< A pointer to the function executed by worker threads.
+    void*                input      = nullptr;  ///< Pointer to the data used by the worker thread.
+    int32_t              base_index = 0;        ///< Used by worker thread to indicate a starting range of data to be processed.
+    int32_t              count      = 0;        ///< The number of items to be processed.
+    std::atomic<int32_t> run_count{0};          ///< The number of times a Job's worker thread function has been executed.
+    std::atomic<int32_t> completed_count{0};    ///< The number of worker threads that have completed.
 };
 
 // A helper function that stops a thread and blocks until thread has completed.
@@ -555,7 +555,7 @@ RmtErrorCode RmtJobQueueAddMultiple(RmtJobQueue* job_queue, RmtJobFunction func,
     // Get the adapter used to wrap the RmtJobQueue.
     auto* wrapper = GetWrapper(job_queue);
 
-    // Have the adapter create the job object
+    // Have the adapter create the jobs.
     return wrapper->AddMultipleJobs(job_func, input, base_index, count, out_handle);
 }
 
