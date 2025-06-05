@@ -84,7 +84,7 @@ typedef struct RmtJobQueue
 
     RmtJobHandle handle_next;  ///< The next handle to use.
 
-    // Note: Member variables above maintained for for legacy backward compatibility.
+    // Note: Member variables above have been maintained for for legacy backward compatibility and are no longer used.
     IJobQueueAdapter* wrapper;  ///< Pointer to the Job queue.
 } RmtJobQueue;
 
